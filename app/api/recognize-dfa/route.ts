@@ -29,7 +29,7 @@ Return your response as a valid JSON object with the following structure:
 }`
 
     const { text } = await generateText({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-2.5-flash-lite"),
       system: systemPrompt,
       prompt: `Analyze this DFA image and extract its structure. Image data: ${imageData.substring(0, 100)}...`,
       temperature: 0.1,

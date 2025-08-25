@@ -45,7 +45,7 @@ Return your response as a valid JSON object with the following structure:
 }`
 
     const { text } = await generateText({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-2.5-flash-lite"),
       system: systemPrompt,
       prompt: `Minimize this DFA: ${JSON.stringify(dfa)}`,
       temperature: 0.1,

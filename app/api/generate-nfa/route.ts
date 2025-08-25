@@ -44,7 +44,7 @@ Guidelines:
   - Clean, readable layout`
 
     const { text } = await generateText({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-2.5-flash-lite"),
       system: systemPrompt,
       prompt: `Generate an NFA for: ${prompt}`,
       temperature: 0.1,
