@@ -50,7 +50,7 @@ Generate proper DOT syntax with:
 - Clean, readable layout`
 
     const { text } = await generateText({
-      model: google("gemini-2.0-flash"),
+      model: google("gemini-2.5-flash"),
       system: systemPrompt,
       prompt: `Analyze this automaton image and extract its structure. Image data: ${imageData.substring(0, 100)}...`,
       temperature: 0.1,
