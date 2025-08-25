@@ -154,6 +154,12 @@ export default function LanguagePredictorPage() {
               <CardDescription className="text-white/80">
                 Upload an image of a DFA to predict the language it recognizes
               </CardDescription>
+              <div className="mt-2 p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
+                <p className="text-xs text-yellow-100">
+                  <strong>Note:</strong> May occasionally misinterpret complex diagrams. 
+                  Please verify results for critical applications.
+                </p>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -261,10 +267,15 @@ export default function LanguagePredictorPage() {
 
             {/* Recognized DFA */}
             <div>
-              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <Brain className="w-5 h-5" />
-                Recognized Automaton
-              </h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Brain className="w-5 h-5" />
+                  Recognized Automaton
+                </h2>
+                <div className="p-2 bg-blue-500/20 border border-blue-500/30 rounded text-xs text-blue-100">
+                  Analysis
+                </div>
+              </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                 {/* DFA Visualization */}
                 <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
@@ -324,10 +335,15 @@ export default function LanguagePredictorPage() {
 
             {/* Language Predictions */}
             <div>
-              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <Languages className="w-5 h-5" />
-                Predicted Languages
-              </h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Languages className="w-5 h-5" />
+                  Predicted Languages
+                </h2>
+                <div className="p-2 bg-orange-500/20 border border-orange-500/30 rounded text-xs text-orange-100">
+                  Predictions
+                </div>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {languagePredictions.map((prediction, index) => (
                   <Card key={index} className="bg-white/10 border-white/20 backdrop-blur-sm">

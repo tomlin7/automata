@@ -17,27 +17,26 @@ Return your response as a valid JSON object with the following structure:
 {
   "predictions": [
     {
-      "language": "Even number of 0s",
-      "confidence": 0.85,
-      "description": "Accepts strings with an even number of 0 symbols",
-      "examples": ["", "1", "00", "101", "1001", "1100"],
-      "pattern": "Regular expression or pattern description",
-      "reasoning": "Explanation of why this language matches the DFA"
+      "language": "Description of the language",
+      "confidence": 0.0-1.0,
+      "description": "Detailed description of what the language accepts",
+      "examples": ["example1", "example2", "example3"],
+      "pattern": "Regular expression or pattern description if applicable",
+      "reasoning": "Explanation of why this language matches the DFA structure"
     }
   ],
   "analysis": {
-    "totalStates": 3,
-    "acceptingStates": 1,
-    "alphabet": ["0", "1"],
+    "totalStates": number,
+    "acceptingStates": number,
+    "alphabet": ["symbol1", "symbol2"],
     "observations": [
-      "The DFA has a specific pattern in its transitions",
-      "Accepting states are positioned in a particular way",
-      "The structure suggests a specific language family"
+      "Key observation about the DFA structure",
+      "Another important observation"
     ]
   }
 }
 
-Provide 3-5 different language predictions with varying confidence levels. Focus on common patterns like:
+Provide 3-5 different language predictions with varying confidence levels based on the actual DFA structure. Focus on common patterns like:
 - Even/odd counts of symbols
 - Strings ending with specific patterns
 - Binary numbers with specific properties
@@ -45,10 +44,10 @@ Provide 3-5 different language predictions with varying confidence levels. Focus
 - Strings with specific symbol distributions
 - Divisibility properties for binary numbers
 
-Make sure the confidence levels are realistic and the examples actually belong to the predicted language.`
+IMPORTANT: Only analyze the actual DFA provided. Do not use any placeholder or example data. Base your predictions solely on the structure, states, transitions, and accepting states of the given DFA.`
 
     const { text } = await generateText({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-2.0-flash"),
       system: systemPrompt,
       prompt: `Analyze this DFA and predict what language it recognizes: ${JSON.stringify(dfa)}`,
       temperature: 0.3,

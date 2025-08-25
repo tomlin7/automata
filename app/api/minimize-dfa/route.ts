@@ -15,37 +15,39 @@ export async function POST(request: NextRequest) {
 Return your response as a valid JSON object with the following structure:
 
 {
-  "states": ["q0", "q1"],
-  "alphabet": ["0", "1"],
+  "states": ["state1", "state2"],
+  "alphabet": ["symbol1", "symbol2"],
   "transitions": {
-    "q0": {"0": "q1", "1": "q0"},
-    "q1": {"0": "q1", "1": "q0"}
+    "state1": {"symbol1": "state2", "symbol2": "state1"},
+    "state2": {"symbol1": "state2", "symbol2": "state1"}
   },
-  "startState": "q0",
-  "acceptStates": ["q1"],
+  "startState": "state1",
+  "acceptStates": ["state2"],
   "description": "Minimized DFA equivalent to the original",
-  "dotCode": "digraph G {\\n  rankdir=LR;\\n  node [shape=circle];\\n  q0 [shape=doublecircle];\\n  q0 -> q1 [label=\\"0\\"];\\n  q0 -> q0 [label=\\"1\\"];\\n  q1 -> q1 [label=\\"0\\"];\\n  q1 -> q0 [label=\\"1\\"];\\n}",
+  "dotCode": "digraph G {\\n  rankdir=LR;\\n  node [shape=circle];\\n  state1 [shape=doublecircle];\\n  state1 -> state2 [label=\\"symbol1\\"];\\n  state1 -> state1 [label=\\"symbol2\\"];\\n  state2 -> state2 [label=\\"symbol1\\"];\\n  state2 -> state1 [label=\\"symbol2\\"];\\n}",
   "minimizationSteps": [
     {
       "step": 1,
       "description": "Initial partition",
       "equivalenceClasses": [
-        {"id": "A", "states": ["q0", "q1"], "representative": "q0", "isAccepting": false},
-        {"id": "B", "states": ["q2"], "representative": "q2", "isAccepting": true}
+        {"id": "A", "states": ["state1", "state2"], "representative": "state1", "isAccepting": false},
+        {"id": "B", "states": ["state3"], "representative": "state3", "isAccepting": true}
       ],
       "action": "Separate accepting and non-accepting states"
     }
   ],
   "equivalenceClasses": [
-    {"id": "A", "states": ["q0", "q1"], "representative": "q0", "isAccepting": false},
-    {"id": "B", "states": ["q2"], "representative": "q2", "isAccepting": true}
+    {"id": "A", "states": ["state1", "state2"], "representative": "state1", "isAccepting": false},
+    {"id": "B", "states": ["state3"], "representative": "state3", "isAccepting": true}
   ],
-  "removedStates": ["q1"],
+  "removedStates": ["state2"],
   "stateReduction": 33
-}`
+}
+
+IMPORTANT: Only minimize the actual DFA provided. Do not use any placeholder or example data. Base your minimization solely on the structure, states, transitions, and accepting states of the given DFA.`
 
     const { text } = await generateText({
-      model: google("gemini-2.5-flash-lite"),
+      model: google("gemini-2.0-flash"),
       system: systemPrompt,
       prompt: `Minimize this DFA: ${JSON.stringify(dfa)}`,
       temperature: 0.1,

@@ -15,36 +15,38 @@ export async function POST(request: NextRequest) {
 Return your response as a valid JSON object with the following structure:
 
 {
-  "states": ["q0", "q1", "q2"],
-  "alphabet": ["a", "b"],
+  "states": ["state1", "state2", "state3"],
+  "alphabet": ["symbol1", "symbol2"],
   "transitions": {
-    "q0": {"a": ["q0", "q1"], "b": ["q0"]},
-    "q1": {"a": [], "b": ["q2"]},
-    "q2": {"a": ["q2"], "b": ["q2"]}
+    "state1": {"symbol1": ["state1", "state2"], "symbol2": ["state1"]},
+    "state2": {"symbol1": [], "symbol2": ["state3"]},
+    "state3": {"symbol1": ["state3"], "symbol2": ["state3"]}
   },
   "epsilonTransitions": {
-    "q0": ["q2"]
+    "state1": ["state3"]
   },
-  "startState": "q0",
-  "acceptStates": ["q2"],
-  "description": "NFA that accepts strings containing 'ab' as substring",
-  "dotCode": "digraph G {\\n  rankdir=LR;\\n  node [shape=circle];\\n  q0 [shape=doublecircle];\\n  q0 -> q0 [label=\\"a,b\\"];\\n  q0 -> q1 [label=\\"a\\"];\\n  q1 -> q2 [label=\\"b\\"];\\n  q2 -> q2 [label=\\"a,b\\"];\\n}"
+  "startState": "state1",
+  "acceptStates": ["state3"],
+  "description": "Description of what this NFA accepts",
+  "dotCode": "digraph G {\\n  rankdir=LR;\\n  node [shape=circle];\\n  state1 [shape=doublecircle];\\n  state1 -> state1 [label=\\"symbol1,symbol2\\"];\\n  state1 -> state2 [label=\\"symbol1\\"];\\n  state2 -> state3 [label=\\"symbol2\\"];\\n  state3 -> state3 [label=\\"symbol1,symbol2\\"];\\n}"
 }
 
 Guidelines:
 - Create a valid NFA that matches the description
 - Include epsilon (ε) transitions if needed
 - Generate proper DOT syntax for Graphviz rendering
-- Use clear state names (q0, q1, q2, etc.)
+- Use clear state names (state1, state2, state3, etc.)
 - Ensure the automaton correctly recognizes the described language
 - Generate proper DOT syntax with:
   - States as nodes with appropriate shapes (circle for normal, doublecircle for accepting)
   - Transitions as directed edges with labels
   - Epsilon transitions marked appropriately
-  - Clean, readable layout`
+  - Clean, readable layout
+
+IMPORTANT: Only generate an NFA based on the actual prompt provided. Do not use any placeholder or example data. Base your generation solely on the description given.`
 
     const { text } = await generateText({
-      model: google("gemini-2.5-flash-lite"),
+      model: google("gemini-2.0-flash"),
       system: systemPrompt,
       prompt: `Generate an NFA for: ${prompt}`,
       temperature: 0.1,

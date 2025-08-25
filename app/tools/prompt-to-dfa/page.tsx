@@ -152,7 +152,19 @@ export default function PromptToDFAPage() {
             <>
               {/* Original DFA Section */}
               <div className="mb-8">
-                <h2 className="text-xl font-bold text-white mb-6">Original DFA</h2>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-white">Original DFA</h2>
+                  <div className="p-2 bg-blue-500/20 border border-blue-500/30 rounded text-xs text-blue-100">
+                    Generated
+                  </div>
+                </div>
+                
+                <div className="mb-4 p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
+                  <p className="text-xs text-yellow-100">
+                    <strong>Note:</strong> May occasionally misinterpret complex requirements. 
+                    Please verify results for critical applications.
+                  </p>
+                </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                   {/* DFA Visualization */}
                   <Card className="bg-white/10 border-white/20 backdrop-blur-sm">

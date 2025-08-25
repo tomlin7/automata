@@ -134,6 +134,12 @@ export default function FAMinimizationPage() {
             <CardHeader>
               <CardTitle className="text-white text-lg sm:text-xl">Upload DFA Image</CardTitle>
               <CardDescription className="text-white/80 text-sm">Upload a photo or drawing of your DFA for instant minimization</CardDescription>
+              <div className="mt-2 p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
+                <p className="text-xs text-yellow-100">
+                  <strong>Note:</strong> May occasionally misinterpret complex diagrams. 
+                  Please verify results for critical applications.
+                </p>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div
@@ -176,7 +182,12 @@ export default function FAMinimizationPage() {
             {/* Minimization Stats */}
             <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-white text-lg sm:text-xl">Minimization Results</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-white text-lg sm:text-xl">Minimization Results</CardTitle>
+                  <div className="p-2 bg-blue-500/20 border border-blue-500/30 rounded text-xs text-blue-100">
+                    Analysis
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">

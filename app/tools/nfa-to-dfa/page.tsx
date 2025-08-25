@@ -128,6 +128,12 @@ export default function NFAToDFAPage() {
             <CardHeader>
               <CardTitle className="text-white text-lg sm:text-xl">Upload NFA Image</CardTitle>
               <CardDescription className="text-white/80 text-sm">Upload a photo or drawing of your NFA for instant conversion</CardDescription>
+              <div className="mt-2 p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
+                <p className="text-xs text-yellow-100">
+                  <strong>Note:</strong> May occasionally misinterpret complex diagrams. 
+                  Please verify results for critical applications.
+                </p>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div
@@ -170,8 +176,15 @@ export default function NFAToDFAPage() {
             {/* Conversion Steps Toggle */}
             <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-lg text-white">Conversion Process</CardTitle>
-                <CardDescription className="text-white/80 text-sm">From: <b>{nfaResult.description}</b> to DFA</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg text-white">Conversion Process</CardTitle>
+                    <CardDescription className="text-white/80 text-sm">From: <b>{nfaResult.description}</b> to DFA</CardDescription>
+                  </div>
+                  <div className="p-2 bg-blue-500/20 border border-blue-500/30 rounded text-xs text-blue-100">
+                    Analysis
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <Button

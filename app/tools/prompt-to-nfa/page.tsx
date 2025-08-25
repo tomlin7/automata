@@ -134,17 +134,29 @@ export default function PromptToNFAPage() {
                 </Button>
               </div>
               
+              <div className="mb-4 p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
+                <p className="text-xs text-yellow-100">
+                  <strong>Note:</strong> May occasionally misinterpret complex requirements. 
+                  Please verify results for critical applications.
+                </p>
+              </div>
+              
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                 {/* NFA Visualization */}
                 <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
                   <CardHeader>
                     <div className="flex items-center justify-between gap-2">
-                      <CardTitle className="text-white text-base sm:text-lg">
-                        NFA State Diagram
-                        <Badge variant="secondary" className="text-xs ml-2 bg-white/20 text-white border-white/20">
-                          Non-deterministic
-                        </Badge>
-                      </CardTitle>
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-white text-base sm:text-lg">
+                          NFA State Diagram
+                          <Badge variant="secondary" className="text-xs ml-2 bg-white/20 text-white border-white/20">
+                            Non-deterministic
+                          </Badge>
+                        </CardTitle>
+                        <div className="p-1 bg-blue-500/20 border border-blue-500/30 rounded text-xs text-blue-100">
+                          Generated
+                        </div>
+                      </div>
                       <div className="flex gap-1 sm:gap-2">
                         <Button 
                           variant="outline" 
