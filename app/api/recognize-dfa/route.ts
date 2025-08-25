@@ -4,13 +4,13 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt } = await request.json()
+    const { imageData } = await request.json()
 
-    if (!prompt) {
-      return NextResponse.json({ error: "Prompt is required" }, { status: 400 })
+    if (!imageData) {
+      return NextResponse.json({ error: "Image data is required" }, { status: 400 })
     }
 
-    const systemPrompt = `You are an expert in automata theory. Generate a Deterministic Finite Automaton (DFA) based on the given description.
+    const systemPrompt = `You are an expert in automata theory and image recognition. Analyze the uploaded image of a Deterministic Finite Automaton (DFA) and extract its structure.
 
 Return your response as a valid JSON object with the following structure:
 
@@ -26,28 +26,15 @@ Return your response as a valid JSON object with the following structure:
   "acceptStates": ["q2"],
   "description": "DFA that accepts strings ending with '00'",
   "dotCode": "digraph G {\\n  rankdir=LR;\\n  node [shape=circle];\\n  q0 [shape=doublecircle];\\n  q0 -> q1 [label=\\"0\\"];\\n  q0 -> q0 [label=\\"1\\"];\\n  q1 -> q2 [label=\\"0\\"];\\n  q1 -> q1 [label=\\"1\\"];\\n  q2 -> q2 [label=\\"0\\"];\\n  q2 -> q0 [label=\\"1\\"];\\n}"
-}
-
-Guidelines:
-- Create a valid DFA that matches the description
-- Each state must have exactly one transition for each symbol in the alphabet
-- Generate proper DOT syntax for Graphviz rendering
-- Use clear state names (q0, q1, q2, etc.)
-- Ensure the automaton correctly recognizes the described language
-- Generate proper DOT syntax with:
-  - States as nodes with appropriate shapes (circle for normal, doublecircle for accepting)
-  - Transitions as directed edges with labels
-  - Start state marked appropriately
-  - Clean, readable layout`
+}`
 
     const { text } = await generateText({
       model: google("gemini-2.0-flash"),
       system: systemPrompt,
-      prompt: `Generate a DFA for: ${prompt}`,
+      prompt: `Analyze this DFA image and extract its structure. Image data: ${imageData.substring(0, 100)}...`,
       temperature: 0.1,
     })
 
-    // Extract JSON from the response
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
       return NextResponse.json({ error: "Failed to parse response" }, { status: 500 })
@@ -57,7 +44,7 @@ Guidelines:
 
     return NextResponse.json(dfaData)
   } catch (error) {
-    console.error("Error generating DFA:", error)
-    return NextResponse.json({ error: "Failed to generate DFA" }, { status: 500 })
+    console.error("Error recognizing DFA:", error)
+    return NextResponse.json({ error: "Failed to recognize DFA" }, { status: 500 })
   }
-}
+} 

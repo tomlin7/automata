@@ -11,6 +11,7 @@ import Link from "next/link"
 import { DFAVisualization } from "@/components/dfa-visualization"
 import { TransitionTable } from "@/components/transition-table"
 import { MinimizationSteps } from "@/components/minimization-steps"
+import { ChatInterface } from "@/components/chat-interface"
 import { recognizeDFAFromImage, minimizeDFA } from "@/lib/minimization-api"
 
 interface DFAResult {
@@ -53,6 +54,13 @@ export default function FAMinimizationPage() {
   const [showSteps, setShowSteps] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const examples = [
+    "Minimize this DFA to reduce the number of states",
+    "Find equivalent states and merge them",
+    "Optimize the automaton by removing redundant states",
+    "Apply Hopcroft's algorithm to minimize this DFA",
+  ]
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
@@ -67,7 +75,7 @@ export default function FAMinimizationPage() {
     }
   }
 
-  const handleProcessImage = async () => {
+  const handleSubmit = async (prompt: string) => {
     if (!uploadedImage) return
 
     setIsProcessing(true)
@@ -99,8 +107,10 @@ export default function FAMinimizationPage() {
     ? Math.round(((originalDFA!.states.length - minimizedDFA.states.length) / originalDFA!.states.length) * 100)
     : 0
 
+  const hasResponse = !!(originalDFA && minimizedDFA)
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#50A080" }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#50A080" }}>
       {/* Header */}
       <header className="border-b border-white/20 bg-white/10 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3 sm:py-4">
@@ -113,7 +123,7 @@ export default function FAMinimizationPage() {
             </Link>
             <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               <div className="min-w-0">
-                <h1 className="text-lg sm:text-xl font-bold text-white truncate">FA Minimization</h1>
+                <h1 className="text-lg sm:text-xl font-bold text-white truncate">DFA Minimizer</h1>
                 <p className="text-xs sm:text-sm text-white/80 truncate">Photo input with state reduction</p>
               </div>
             </div>
@@ -121,14 +131,21 @@ export default function FAMinimizationPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+      {/* Chat Interface */}
+      <ChatInterface
+        onSubmit={handleSubmit}
+        isLoading={isProcessing}
+        examples={examples}
+        placeholder="Describe a bit..."
+        hasResponse={hasResponse}
+      >
+        <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
           {/* Upload Section */}
-          <div className="space-y-4 sm:space-y-6">
+          <div className="mb-6">
             <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-white text-lg sm:text-xl">Upload DFA Image</CardTitle>
-                <CardDescription className="text-white/80 text-sm">Upload a photo or drawing of your Deterministic Finite Automaton</CardDescription>
+                <CardDescription className="text-white/80 text-sm">Upload a photo or drawing of your DFA</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div
@@ -155,24 +172,19 @@ export default function FAMinimizationPage() {
                   )}
                 </div>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-                <Button 
-                  onClick={handleProcessImage} 
-                  disabled={!uploadedImage || isProcessing} 
-                  className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30"
-                  variant="outline"
-                >
-                  {isProcessing ? "Processing..." : "Recognize & Minimize"}
-                </Button>
-                {error && (
-                  <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-md">
-                    <p className="text-sm text-red-100">{error}</p>
-                  </div>
-                )}
               </CardContent>
             </Card>
+          </div>
 
-            {/* Minimization Stats */}
-            {minimizedDFA && originalDFA && (
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
+              <p className="text-sm text-red-100">{error}</p>
+            </div>
+          )}
+
+          {originalDFA && minimizedDFA && (
+            <div className="space-y-6">
+              {/* Minimization Stats */}
               <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="text-white text-lg sm:text-xl">Minimization Results</CardTitle>
@@ -210,10 +222,8 @@ export default function FAMinimizationPage() {
                   )}
                 </CardContent>
               </Card>
-            )}
 
-            {/* Minimization Steps Toggle */}
-            {minimizedDFA && (
+              {/* Minimization Steps Toggle */}
               <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="text-lg text-white">Minimization Process</CardTitle>
@@ -230,62 +240,25 @@ export default function FAMinimizationPage() {
                   </Button>
                 </CardContent>
               </Card>
-            )}
 
-            {/* Tips */}
-            <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-lg text-white">Tips for Best Results</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div className="flex items-start gap-2">
-                  <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
-                    1
-                  </Badge>
-                  <p className="text-white/80">Draw states as clear circles with labels</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
-                    2
-                  </Badge>
-                  <p className="text-white/80">Use arrows to show transitions between states</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
-                    3
-                  </Badge>
-                  <p className="text-white/80">Mark start state with an arrow pointing to it</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
-                    4
-                  </Badge>
-                  <p className="text-white/80">Use double circles for accepting states</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Results Section */}
-          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-            {showSteps && minimizedDFA ? (
-              <MinimizationSteps
-                steps={minimizedDFA.minimizationSteps}
-                equivalenceClasses={minimizedDFA.equivalenceClasses}
-              />
-            ) : originalDFA && minimizedDFA ? (
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
-                {/* Original DFA */}
-                <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-                  <CardHeader>
-                    <div className="flex items-center justify-between gap-2">
-                      <CardTitle className="text-white text-base sm:text-lg">
-                        Original DFA
-                        <Badge variant="secondary" className="text-xs ml-2 bg-white/20 text-white border-white/20">
-                          {originalDFA.states.length} states
-                        </Badge>
-                      </CardTitle>
-                                              <Button 
+              {showSteps ? (
+                <MinimizationSteps
+                  steps={minimizedDFA.minimizationSteps}
+                  equivalenceClasses={minimizedDFA.equivalenceClasses}
+                />
+              ) : (
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+                  {/* Original DFA */}
+                  {/* <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
+                    <CardHeader>
+                      <div className="flex items-center justify-between gap-2">
+                        <CardTitle className="text-white text-base sm:text-lg">
+                          Original DFA
+                          <Badge variant="secondary" className="text-xs ml-2 bg-white/20 text-white border-white/20">
+                            {originalDFA.states.length} states
+                          </Badge>
+                        </CardTitle>
+                        <Button 
                           variant="outline" 
                           size="sm" 
                           onClick={() => copyDotCode(false)}
@@ -300,7 +273,7 @@ export default function FAMinimizationPage() {
                     <CardContent>
                       <DFAVisualization dotCode={originalDFA.dotCode} />
                     </CardContent>
-                  </Card>
+                  </Card> */}
 
                   {/* Minimized DFA */}
                   <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
@@ -326,53 +299,81 @@ export default function FAMinimizationPage() {
                     </CardHeader>
                     <CardContent>
                       <DFAVisualization dotCode={minimizedDFA.dotCode} />
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
 
-                {/* Original Transition Table */}
-                <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="text-white text-base sm:text-lg">Original Transitions</CardTitle>
-                    <CardDescription className="text-white/80 text-sm">Complete transition function</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <TransitionTable
-                      states={originalDFA.states}
-                      alphabet={originalDFA.alphabet}
-                      transitions={originalDFA.transitions}
-                      startState={originalDFA.startState}
-                      acceptStates={originalDFA.acceptStates}
-                    />
-                  </CardContent>
-                </Card>
+                  {/* Original Transition Table */}
+                  {/* <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
+                    <CardHeader>
+                      <CardTitle className="text-white text-base sm:text-lg">Original Transitions</CardTitle>
+                      <CardDescription className="text-white/80 text-sm">Complete transition function</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <TransitionTable
+                        states={originalDFA.states}
+                        alphabet={originalDFA.alphabet}
+                        transitions={originalDFA.transitions}
+                        startState={originalDFA.startState}
+                        acceptStates={originalDFA.acceptStates}
+                      />
+                    </CardContent>
+                  </Card> */}
 
-                {/* Minimized Transition Table */}
-                <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="text-white text-base sm:text-lg">Minimized Transitions</CardTitle>
-                    <CardDescription className="text-white/80 text-sm">Optimized transition function</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <TransitionTable
-                      states={minimizedDFA.states}
-                      alphabet={minimizedDFA.alphabet}
-                      transitions={minimizedDFA.transitions}
-                      startState={minimizedDFA.startState}
-                      acceptStates={minimizedDFA.acceptStates}
-                    />
-                  </CardContent>
-                </Card>
+                  {/* Minimized Transition Table */}
+                  <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
+                    <CardHeader>
+                      <CardTitle className="text-white text-base sm:text-lg">Minimized Transitions</CardTitle>
+                      <CardDescription className="text-white/80 text-sm">Optimized transition function</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <TransitionTable
+                        states={minimizedDFA.states}
+                        alphabet={minimizedDFA.alphabet}
+                        transitions={minimizedDFA.transitions}
+                        startState={minimizedDFA.startState}
+                        acceptStates={minimizedDFA.acceptStates}
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Tips */}
+          {/* <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-lg text-white">Tips for Best Results</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div className="flex items-start gap-2">
+                <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
+                  1
+                </Badge>
+                <p className="text-white/80">Draw states as clear circles with labels</p>
               </div>
-            ) : (
-              <Card className="h-64 sm:h-96 flex items-center justify-center bg-white/10 border-white/20 backdrop-blur-sm">
-                <CardContent className="text-center">
-                  <p className="text-white/80 text-sm sm:text-base">Upload an image of your DFA to see the minimized version</p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+              <div className="flex items-start gap-2">
+                <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
+                  2
+                </Badge>
+                <p className="text-white/80">Use arrows to show transitions between states</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
+                  3
+                </Badge>
+                <p className="text-white/80">Mark start state with an arrow pointing to it</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
+                  4
+                </Badge>
+                <p className="text-white/80">Use double circles for accepting states</p>
+              </div>
+            </CardContent>
+          </Card> */}
         </div>
-      </div>
+      </ChatInterface>
     </div>
   )
 }

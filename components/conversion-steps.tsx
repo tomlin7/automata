@@ -5,8 +5,8 @@ import { ArrowRight } from "lucide-react"
 interface ConversionStep {
   step: number
   description: string
-  newStates: string[]
-  stateMapping: Record<string, string[]>
+  newStates?: string[]
+  stateMapping?: Record<string, string[]>
 }
 
 interface ConversionStepsProps {
@@ -31,7 +31,7 @@ export function ConversionSteps({ steps }: ConversionStepsProps) {
               <div className="flex-1 space-y-3">
                 <p className="text-sm font-medium">{step.description}</p>
 
-                {step.newStates.length > 0 && (
+                {step.newStates && step.newStates.length > 0 && (
                   <div>
                     <p className="text-xs text-muted-foreground mb-2">New DFA states created:</p>
                     <div className="flex flex-wrap gap-2">
@@ -44,7 +44,7 @@ export function ConversionSteps({ steps }: ConversionStepsProps) {
                   </div>
                 )}
 
-                {Object.keys(step.stateMapping).length > 0 && (
+                {step.stateMapping && Object.keys(step.stateMapping).length > 0 && (
                   <div>
                     <p className="text-xs text-muted-foreground mb-2">State mappings:</p>
                     <div className="space-y-2">

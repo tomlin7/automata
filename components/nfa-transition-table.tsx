@@ -1,7 +1,7 @@
 interface NFATransitionTableProps {
   states: string[]
   alphabet: string[]
-  transitions: Record<string, Record<string, string[]>>
+  transitions: Record<string, Record<string, string[] | string>>
   epsilonTransitions?: Record<string, string[]>
   startState: string
   acceptStates: string[]
@@ -61,12 +61,12 @@ export function NFATransitionTable({
                     <td key={symbol} className="px-3 py-3 text-center text-sm sm:text-base text-foreground">
                       {isDFA ? (
                         // For DFA, show single transition
-                        (transitions[state]?.[symbol] as unknown as string) || "—"
+                        (transitions[state]?.[symbol] as string) || "—"
                       ) : (
                         // For NFA, show multiple transitions
                         <div className="flex flex-wrap gap-1 justify-center">
-                          {transitions[state]?.[symbol]?.length > 0 ? (
-                            transitions[state][symbol].map((target, index) => (
+                          {Array.isArray(transitions[state]?.[symbol]) && (transitions[state][symbol] as string[])?.length > 0 ? (
+                            (transitions[state][symbol] as string[]).map((target, index) => (
                               <span key={index} className="text-xs bg-accent/20 px-1 py-0.5 rounded">
                                 {target}
                               </span>

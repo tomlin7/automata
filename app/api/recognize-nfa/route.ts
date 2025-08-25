@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No image provided" }, { status: 400 })
     }
 
-    const systemPrompt = `You are an expert in automata theory and image recognition. Analyze the uploaded image of a finite automaton and extract its structure.
+    const systemPrompt = `You are an expert in automata theory and image recognition. Analyze the uploaded image of a non-deterministic finite automaton and extract its structure.
 
 The image contains a hand-drawn or digital finite automaton. Extract:
 - States (circles with labels)
@@ -50,7 +50,7 @@ Generate proper DOT syntax with:
 - Clean, readable layout`
 
     const { text } = await generateText({
-      model: google("gemini-1.5-flash"),
+      model: google("gemini-2.0-flash"),
       system: systemPrompt,
       prompt: `Analyze this automaton image and extract its structure. Image data: ${imageData.substring(0, 100)}...`,
       temperature: 0.1,

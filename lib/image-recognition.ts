@@ -1,5 +1,5 @@
 export async function recognizeNFAFromImage(imageData: string) {
-  const response = await fetch("/api/recognize-image", {
+  const response = await fetch("/api/recognize-nfa", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
