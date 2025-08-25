@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -12,6 +12,7 @@ import { MinimizationSteps } from "@/components/minimization-steps"
 import { ChatInterface } from "@/components/chat-interface"
 import { generateDFA } from "@/lib/dfa-api"
 import { minimizeDFA } from "@/lib/minimization-api"
+import { AutomatonVisualizationRef } from "@/components/automaton-visualization"
 
 interface DFAResult {
   states: string[]
@@ -50,6 +51,9 @@ export default function PromptToDFAPage() {
   const [dfaResult, setDfaResult] = useState<DFAResult | null>(null)
   const [minimizedDfaResult, setMinimizedDfaResult] = useState<MinimizedDFAResult | null>(null)
   const [error, setError] = useState<string | null>(null)
+  
+  const originalDfaRef = useRef<AutomatonVisualizationRef>(null)
+  const minimizedDfaRef = useRef<AutomatonVisualizationRef>(null)
 
   const examples = [
     "DFA that accepts strings with an even number of 0s",
@@ -89,16 +93,20 @@ export default function PromptToDFAPage() {
     }
   }
 
-  const copyDotCode = () => {
-    if (dfaResult?.dotCode) {
-      navigator.clipboard.writeText(dfaResult.dotCode)
-    }
+  const copyOriginalDiagram = () => {
+    originalDfaRef.current?.copyPNG()
   }
 
-  const copyMinimizedDotCode = () => {
-    if (minimizedDfaResult?.dotCode) {
-      navigator.clipboard.writeText(minimizedDfaResult.dotCode)
-    }
+  const exportOriginalDiagram = () => {
+    originalDfaRef.current?.exportPNG()
+  }
+
+  const copyMinimizedDiagram = () => {
+    minimizedDfaRef.current?.copyPNG()
+  }
+
+  const exportMinimizedDiagram = () => {
+    minimizedDfaRef.current?.exportPNG()
   }
 
   const hasResponse = !!dfaResult
@@ -155,7 +163,7 @@ export default function PromptToDFAPage() {
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            onClick={copyDotCode}
+                            onClick={copyOriginalDiagram}
                             className="bg-white/20 hover:bg-white/30 text-white border-white/30 h-8 w-8 sm:h-9 sm:w-auto sm:px-3"
                           >
                             <Copy className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -164,6 +172,7 @@ export default function PromptToDFAPage() {
                           <Button 
                             variant="outline" 
                             size="sm"
+                            onClick={exportOriginalDiagram}
                             className="bg-white/20 hover:bg-white/30 text-white border-white/30 h-8 w-8 sm:h-9 sm:w-auto sm:px-3"
                           >
                             <Download className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -174,7 +183,11 @@ export default function PromptToDFAPage() {
                       <CardDescription className="text-white/80 text-sm">{dfaResult.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <DFAVisualization dotCode={dfaResult.dotCode} />
+                      <DFAVisualization 
+                        ref={originalDfaRef}
+                        dotCode={dfaResult.dotCode} 
+                        showControls={false}
+                      />
                     </CardContent>
                   </Card>
 
@@ -299,7 +312,7 @@ export default function PromptToDFAPage() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={copyMinimizedDotCode}
+                              onClick={copyMinimizedDiagram}
                               className="bg-white/20 hover:bg-white/30 text-white border-white/30 h-8 w-8 sm:h-9 sm:w-auto sm:px-3"
                             >
                               <Copy className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -308,6 +321,7 @@ export default function PromptToDFAPage() {
                             <Button 
                               variant="outline" 
                               size="sm"
+                              onClick={exportMinimizedDiagram}
                               className="bg-white/20 hover:bg-white/30 text-white border-white/30 h-8 w-8 sm:h-9 sm:w-auto sm:px-3"
                             >
                               <Download className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -317,7 +331,11 @@ export default function PromptToDFAPage() {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <DFAVisualization dotCode={minimizedDfaResult.dotCode} />
+                        <DFAVisualization 
+                          ref={minimizedDfaRef}
+                          dotCode={minimizedDfaResult.dotCode} 
+                          showControls={false}
+                        />
                       </CardContent>
                     </Card>
 
