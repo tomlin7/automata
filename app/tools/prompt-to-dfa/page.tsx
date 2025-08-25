@@ -125,8 +125,8 @@ export default function PromptToDFAPage() {
             </Link>
             <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               <div className="min-w-0">
-                <h1 className="text-lg sm:text-xl font-bold text-white truncate">Prompt to DFA</h1>
-                <p className="text-xs sm:text-sm text-white/80 truncate">AI-powered DFA generation</p>
+                <h1 className="text-lg sm:text-xl font-bold text-white truncate">DFA</h1>
+                <p className="text-xs sm:text-sm text-white/80 truncate">Generate DFA easily</p>
               </div>
             </div>
           </div>

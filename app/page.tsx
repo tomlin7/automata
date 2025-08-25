@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowRight, Github, Plus, Cpu, GitBranch, Shuffle, Minimize2 } from "lucide-react"
+import { ArrowRight, Github, Plus, Cpu, GitBranch, Shuffle, Minimize2, Languages } from "lucide-react"
 
 export default function HomePage() {
   const handleCardClick = (href: string) => {
@@ -120,20 +120,20 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            {/* Repository */}
+            {/* Language Predictor */}
             <Card 
               className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-0 relative overflow-hidden cursor-pointer h-48 sm:h-auto"
               style={{ backgroundColor: "#5C85D6" }}
-              onClick={() => handleExternalClick("https://github.com/tomlin7/automata")}
+              onClick={() => handleCardClick("/tools/language-predictor")}
             >
               <div className="absolute top-3 right-3">
                 <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                  <Github className="w-4 h-4 text-white" />
+                  <Languages className="w-4 h-4 text-white" />
                 </div>
               </div>
               <CardHeader className="pb-4 pt-12">
                 <CardTitle className="text-lg sm:text-xl text-white text-center font-bold">
-                  Repository
+                  Language Predictor
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-0 flex-1 flex flex-col justify-end">

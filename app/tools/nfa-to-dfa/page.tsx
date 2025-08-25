@@ -11,7 +11,6 @@ import Link from "next/link"
 import { NFAVisualization } from "@/components/nfa-visualization"
 import { NFATransitionTable } from "@/components/nfa-transition-table"
 import { ConversionSteps } from "@/components/conversion-steps"
-import { ChatInterface } from "@/components/chat-interface"
 import { recognizeNFAFromImage, convertNFAToDFA } from "@/lib/image-recognition"
 
 interface NFAResult {
@@ -52,36 +51,28 @@ export default function NFAToDFAPage() {
   const [showSteps, setShowSteps] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const examples = [
-    "Convert this NFA to DFA",
-    "Convert this NFA with epsilon transitions to DFA",
-    "Process NFA image with binary alphabet {0,1}",
-    "Recognize and convert handwritten NFA to DFA",
-  ]
-
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
       const reader = new FileReader()
       reader.onload = (e) => {
-        setUploadedImage(e.target?.result as string)
-        setNfaResult(null)
-        setDfaResult(null)
-        setError(null)
+        const result = e.target?.result as string
+        setUploadedImage(result)
+        handleImageProcessing(result)
       }
       reader.readAsDataURL(file)
     }
   }
 
-  const handleSubmit = async (prompt: string) => {
-    if (!uploadedImage) return
-
+  const handleImageProcessing = async (imageData: string) => {
     setIsProcessing(true)
     setError(null)
+    setNfaResult(null)
+    setDfaResult(null)
 
     try {
       // Recognize NFA from image
-      const nfa = await recognizeNFAFromImage(uploadedImage)
+      const nfa = await recognizeNFAFromImage(imageData)
       setNfaResult(nfa)
 
       // Convert to DFA
@@ -100,8 +91,6 @@ export default function NFAToDFAPage() {
       navigator.clipboard.writeText(code)
     }
   }
-
-  const hasResponse = !!(nfaResult && dfaResult)
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#D96B6B" }}>
@@ -125,211 +114,131 @@ export default function NFAToDFAPage() {
         </div>
       </header>
 
-      {/* Chat Interface */}
-      <ChatInterface
-        onSubmit={handleSubmit}
-        isLoading={isProcessing}
-        examples={examples}
-        placeholder="Describe a bit..."
-        hasResponse={hasResponse}
-      >
-        <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
-          {/* Upload Section */}
-          <div className="mb-6">
-            <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-white text-lg sm:text-xl">Upload NFA Image</CardTitle>
-                <CardDescription className="text-white/80 text-sm">Upload a photo or drawing of your NFA</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div
-                  className="border-2 border-dashed border-white/30 rounded-lg p-6 sm:p-8 text-center cursor-pointer hover:border-white/50 transition-colors"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  {uploadedImage ? (
-                    <div className="space-y-4">
-                      <img
-                        src={uploadedImage || "/placeholder.svg"}
-                        alt="Uploaded NFA"
-                        className="max-w-full max-h-32 sm:max-h-48 mx-auto rounded-lg border border-white/20"
-                      />
-                      <p className="text-sm text-white/80">Click to change image</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <Camera className="w-8 h-8 sm:w-12 sm:h-12 text-white/60 mx-auto" />
-                      <div>
-                        <p className="text-sm font-medium text-white">Click to upload image</p>
-                        <p className="text-xs text-white/60">PNG, JPG up to 10MB</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-              </CardContent>
-            </Card>
+      {/* Main Content */}
+      <div className="flex-1 container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
+            <p className="text-sm text-red-100">{error}</p>
           </div>
+        )}
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
-              <p className="text-sm text-red-100">{error}</p>
-            </div>
-          )}
-
-          {nfaResult && dfaResult && (
-            <div className="space-y-6">
-              {/* Conversion Steps Toggle */}
-              <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="text-lg text-white">Conversion Process</CardTitle>
-                  <CardDescription className="text-white/80 text-sm">From: <b>{nfaResult.description}</b> to DFA</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    variant={showSteps ? "default" : "outline"}
-                    onClick={() => setShowSteps(!showSteps)}
-                    size="sm"
-                    className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30"
-                  >
-                    {showSteps ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-                    {showSteps ? "Hide Steps" : "Show Conversion Steps"}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {showSteps ? (
-                  <ConversionSteps steps={dfaResult.conversionSteps} />
-              ) : (
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
-                  {/* Original NFA */}
-                  {/* <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-                    <CardHeader>
-                      <div className="flex items-center justify-between gap-2">
-                        <CardTitle className="text-white text-base sm:text-lg">
-                          Original NFA
-                          <Badge variant="secondary" className="text-xs ml-2 bg-white/20 text-white border-white/20">
-                            NFA
-                          </Badge>
-                        </CardTitle>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => copyDotCode(false)}
-                          className="bg-white/20 hover:bg-white/30 text-white border-white/30 flex-shrink-0"
-                        >
-                          <Copy className="w-4 h-4 mr-1 sm:mr-2" />
-                          <span className="hidden sm:inline">Copy</span>
-                        </Button>
-                      </div>
-                      <CardDescription className="text-white/80 text-sm">{nfaResult.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <NFAVisualization dotCode={nfaResult.dotCode} />
-                    </CardContent>
-                  </Card> */}
-
-                  {/* Converted DFA */}
-                  <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-                    <CardHeader>
-                      <div className="flex items-center justify-between gap-2">
-                        <CardTitle className="text-white text-base sm:text-lg">
-                          Converted DFA
-                          <Badge variant="default" className="text-xs ml-2 bg-white/20 text-white border-white/20">
-                            Deterministic
-                          </Badge>
-                        </CardTitle>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => copyDotCode(true)}
-                          className="bg-white/20 hover:bg-white/30 text-white border-white/30 flex-shrink-0"
-                        >
-                          <Copy className="w-4 h-4 mr-1 sm:mr-2" />
-                          <span className="hidden sm:inline">Copy</span>
-                        </Button>
-                      </div>
-                      <CardDescription className="text-white/80 text-sm">{dfaResult.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <NFAVisualization dotCode={dfaResult.dotCode} />
-                    </CardContent>
-                  </Card>
-
-                  {/* NFA Transition Table */}
-                  {/* <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="text-white text-base sm:text-lg">NFA Transitions</CardTitle>
-                      <CardDescription className="text-white/80 text-sm">Original non-deterministic transitions</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <NFATransitionTable
-                        states={nfaResult.states}
-                        alphabet={nfaResult.alphabet}
-                        transitions={nfaResult.transitions}
-                        epsilonTransitions={nfaResult.epsilonTransitions}
-                        startState={nfaResult.startState}
-                        acceptStates={nfaResult.acceptStates}
-                        isDFA={false}
-                      />
-                    </CardContent>
-                  </Card> */}
-
-                  {/* DFA Transition Table */}
-                  <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="text-white text-base sm:text-lg">DFA Transitions</CardTitle>
-                      <CardDescription className="text-white/80 text-sm">Converted deterministic transitions</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <NFATransitionTable
-                        states={dfaResult.states}
-                        alphabet={dfaResult.alphabet}
-                        transitions={dfaResult.transitions}
-                        startState={dfaResult.startState}
-                        acceptStates={dfaResult.acceptStates}
-                        isDFA={true}
-                      />
-                    </CardContent>
-                  </Card>
+        {/* Upload Section */}
+        <div className="mb-8">
+          <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-white text-lg sm:text-xl">Upload NFA Image</CardTitle>
+              <CardDescription className="text-white/80 text-sm">Upload a photo or drawing of your NFA for instant conversion</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div
+                className="border-2 border-dashed border-white/30 rounded-lg p-6 sm:p-8 text-center cursor-pointer hover:border-white/50 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {uploadedImage ? (
+                  <div className="space-y-4">
+                    <img
+                      src={uploadedImage}
+                      alt="Uploaded NFA"
+                      className="max-w-full max-h-32 sm:max-h-48 mx-auto rounded-lg border border-white/20"
+                    />
+                    <p className="text-sm text-white/80">Click to change image</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <Camera className="w-8 h-8 sm:w-12 sm:h-12 text-white/60 mx-auto" />
+                    <div>
+                      <p className="text-sm font-medium text-white">Click to upload image</p>
+                      <p className="text-xs text-white/60">PNG, JPG up to 10MB</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+              
+              {isProcessing && (
+                <div className="flex items-center gap-2 text-white/80">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm">Processing NFA image...</span>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* Tips */}
-          {/* <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-lg text-white">Tips for Best Results</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="flex items-start gap-2">
-                <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
-                  1
-                </Badge>
-                <p className="text-white/80">Draw states as clear circles with labels</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
-                  2
-                </Badge>
-                <p className="text-white/80">Use arrows to show transitions between states</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
-                  3
-                </Badge>
-                <p className="text-white/80">Mark start state with an arrow pointing to it</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <Badge variant="outline" className="text-xs mt-0.5 bg-white/10 border-white/20 text-white flex-shrink-0">
-                  4
-                </Badge>
-                <p className="text-white/80">Use double circles for accepting states</p>
-              </div>
             </CardContent>
-          </Card> */}
+          </Card>
         </div>
-      </ChatInterface>
+
+        {nfaResult && dfaResult && (
+          <div className="space-y-6">
+            {/* Conversion Steps Toggle */}
+            <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-lg text-white">Conversion Process</CardTitle>
+                <CardDescription className="text-white/80 text-sm">From: <b>{nfaResult.description}</b> to DFA</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  variant={showSteps ? "default" : "outline"}
+                  onClick={() => setShowSteps(!showSteps)}
+                  size="sm"
+                  className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30"
+                >
+                  {showSteps ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+                  {showSteps ? "Hide Steps" : "Show Conversion Steps"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {showSteps ? (
+                <ConversionSteps steps={dfaResult.conversionSteps} />
+            ) : (
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+                {/* Converted DFA */}
+                <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
+                  <CardHeader>
+                    <div className="flex items-center justify-between gap-2">
+                      <CardTitle className="text-white text-base sm:text-lg">
+                        Converted DFA
+                        <Badge variant="default" className="text-xs ml-2 bg-white/20 text-white border-white/20">
+                          Deterministic
+                        </Badge>
+                      </CardTitle>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => copyDotCode(true)}
+                        className="bg-white/20 hover:bg-white/30 text-white border-white/30 flex-shrink-0"
+                      >
+                        <Copy className="w-4 h-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">Copy</span>
+                      </Button>
+                    </div>
+                    <CardDescription className="text-white/80 text-sm">{dfaResult.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <NFAVisualization dotCode={dfaResult.dotCode} />
+                  </CardContent>
+                </Card>
+
+                {/* DFA Transition Table */}
+                <Card className="bg-white/10 border-white/20 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="text-white text-base sm:text-lg">DFA Transitions</CardTitle>
+                    <CardDescription className="text-white/80 text-sm">Converted deterministic transitions</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <NFATransitionTable
+                      states={dfaResult.states}
+                      alphabet={dfaResult.alphabet}
+                      transitions={dfaResult.transitions}
+                      startState={dfaResult.startState}
+                      acceptStates={dfaResult.acceptStates}
+                      isDFA={true}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
