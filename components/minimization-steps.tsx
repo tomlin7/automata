@@ -66,7 +66,7 @@ export function MinimizationSteps({ steps, equivalenceClasses }: MinimizationSte
                             </div>
                             {eqClass.isAccepting && (
                               <Badge variant="secondary" className="text-xs ml-auto">
-                                Accept
+                                Final
                               </Badge>
                             )}
                           </div>
@@ -108,7 +108,7 @@ export function MinimizationSteps({ steps, equivalenceClasses }: MinimizationSte
                 </div>
                 {eqClass.isAccepting && (
                   <Badge variant="secondary" className="text-sm ml-auto">
-                    Accepting
+                    Final
                   </Badge>
                 )}
               </div>

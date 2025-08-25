@@ -227,7 +227,7 @@ export default function PromptToNFAPage() {
                         </Badge>
                       </div>
                       <div>
-                        <span className="font-medium text-white/80">Accept States:</span>
+                        <span className="font-medium text-white/80">Final States:</span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {nfaResult.acceptStates.map((state) => (
                             <Badge key={state} variant="secondary" className="text-xs bg-white/20 text-white border-white/20">
@@ -361,7 +361,7 @@ export default function PromptToNFAPage() {
                         </Badge>
                       </div>
                       <div>
-                        <span className="font-medium text-white/80">Accept States:</span>
+                        <span className="font-medium text-white/80">Final States:</span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {dfaResult.acceptStates.map((state) => (
                             <Badge key={state} variant="secondary" className="text-xs bg-white/20 text-white border-white/20">
