@@ -89,7 +89,7 @@ REQUIRED GUIDELINES:
 The conversionSteps are ESSENTIAL for educational purposes and MUST be included in every response.`
 
     const { text } = await generateText({
-      model: google("gemini-2.5-flash-lite"),
+      model: google("gemini-2.5-flash"),
       system: systemPrompt,
       prompt: `Convert this NFA to DFA using subset construction: ${JSON.stringify(nfa)}`,
       temperature: 0.1,

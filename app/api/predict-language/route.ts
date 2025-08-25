@@ -48,7 +48,7 @@ Provide 3-5 different language predictions with varying confidence levels. Focus
 Make sure the confidence levels are realistic and the examples actually belong to the predicted language.`
 
     const { text } = await generateText({
-      model: google("gemini-2.5-flash-lite"),
+      model: google("gemini-2.5-flash"),
       system: systemPrompt,
       prompt: `Analyze this DFA and predict what language it recognizes: ${JSON.stringify(dfa)}`,
       temperature: 0.3,
