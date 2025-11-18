@@ -97,7 +97,32 @@ export default function HomePage() {
 
             {/* Prompt → NFA */}
             <Card 
-              className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-0 relative overflow-hidden cursor-pointer h-48 sm:h-auto sm:col-span-2 lg:col-span-2 lg:row-span-2"
+              className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-0 relative overflow-hidden cursor-pointer h-48 sm:h-auto sm:col-span-2 lg:col-span-1 lg:row-span-2"
+              style={{ backgroundColor: "#E15C3A" }}
+              onClick={() => handleCardClick("/tools/re-to-dfa")}
+            >
+              <div className="absolute top-3 right-3">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                  <GitBranch className="w-4 h-4 text-white" />
+                </div>
+              </div>
+              <CardHeader className="pb-4 pt-12">
+                <CardTitle className="text-lg sm:text-xl lg:text-2xl text-white text-center font-bold">
+                  RE → DFA
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0 flex-1 flex flex-col justify-end">
+                <div className="absolute bottom-3 right-3">
+                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                    <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Prompt → NFA */}
+            <Card 
+              className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-0 relative overflow-hidden cursor-pointer h-48 sm:h-auto sm:col-span-2 lg:col-span-1 lg:row-span-2"
               style={{ backgroundColor: "#E066B0" }}
               onClick={() => handleCardClick("/tools/prompt-to-nfa")}
             >
@@ -119,6 +144,7 @@ export default function HomePage() {
                 </div>
               </CardContent>
             </Card>
+
 
             {/* Language Predictor */}
             <Card 
